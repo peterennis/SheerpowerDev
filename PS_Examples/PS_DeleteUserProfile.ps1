@@ -1,0 +1,6 @@
+$SIDS = "S-1-5-21-214564456-45454454564-4564564564-4176", "S-1-5-21-214564456-45454454564-4564564564-3979", "S-1-5-21-214564456-45454454564-4564564564-3900", "S-1-5-21-214564456-45454454564-4564564564-2827"
+
+foreach ($SID in $SIDS) { 
+    Get-WMIObject -class Win32_UserProfile | Where-Object -Property SID -EQ $SID 
+    #Get-WMIObject -class Win32_UserProfile | Where-Object -Property SID -EQ $SID | Remove-WmiObject 
+}
