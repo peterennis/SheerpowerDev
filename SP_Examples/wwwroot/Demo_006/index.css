@@ -1,0 +1,25 @@
+.ae {
+  border: 2px solid #8bc34a;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  left: 50%;
+  overflow: hidden;
+  position: absolute;
+  top: 50%;
+}
+.ae svg {
+  animation: rotation 3s linear 0s infinite;
+}
+.ae svg path {
+  stroke: #6ab32f;
+}
+
+@keyframes rotation {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100px);
+  }
+}
