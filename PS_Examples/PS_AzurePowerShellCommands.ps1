@@ -54,3 +54,14 @@
 
 # Get-PSDrive cmdlet gets the drives in the current session
 #Get-PSDrive
+
+
+########## Popular Docker Commands ##########
+
+
+# Ref: https://linuxize.com/post/how-to-remove-docker-images-containers-volumes-and-networks/
+
+
+# The docker system prune command will remove all stopped containers, all dangling images, and all unused networks
+#docker system prune
+
