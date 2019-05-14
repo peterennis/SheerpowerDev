@@ -50,8 +50,11 @@ This paraemeter will show only the OU names for users/computers but not the full
 You can find this script and more at: https://www.sysadminplus.blogspot.com/
 #>
 
+
 param( [switch]$LastLogonOnly, [switch]$OuOnly, [int]$MaxEvent = 1000)
 ############## Find EventID 4768 with user's requesting Kerberos TGT, skipping Exchange Health Mailbox request and extracting  Users/Client names,IP Addresses ####
+Write-Host ">>> App requires PowerShell 5.1 <<<"
+
 $Domain = (Get-WmiObject Win32_Computersystem).domain
 $read_log = {
     Param ($MaxEvent, $OuOnly, $Domain)			## Define parameter to pass maxevent to scripblock
