@@ -20,7 +20,7 @@
 !         M a i n   L o g i c   A r e a
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-open #1: name 'http://www.ttinet.com/sheerpower/sample.txt', timeout 10 // try for no more then 10 seconds, then timeout 
+open #1: name 'http://www.ttinet.com/sheerpower/sample.txt', timeout 10 // try for no more than 10 seconds, then timeout 
   for count = 1 to 100 
     line input #1, eof eof?: rec$ 
     if eof? then exit for

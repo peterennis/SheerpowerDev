@@ -1,0 +1,84 @@
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Program: SP_028.spsrc
+! System : .
+! Author : Peter
+! Company: RDA
+! Date   : May 21, 2019
+! Purpose: Using Clusters
+!
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!         I n i t i a l i z a t i o n
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!         M a i n   L o g i c   A r e a
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+cluster student: name$, age, level
+
+  add cluster student
+  student->name$ = "Joan Ark"
+  student->age = 18
+  student->level = 12
+
+  add cluster student
+  student->name$ = "John Smith"
+  student->age = 16
+  student->level = 10
+
+  add cluster student
+  student->name$ = "Desmond Jones"
+  student->age = 15
+  student->level = 10
+
+  set cluster student: row 1
+  print "1: ";student->name$
+
+  print "2: ";size(student)
+
+  set cluster student: row 2
+  ask cluster student: row x
+  print "3: ";x
+
+  ages = 0
+  counter = 0
+  collect cluster student
+    print "4: ";student->name$, student->age, student->level
+    ages = ages + student->age
+    counter++
+  end collect
+  print "5: ";'The average age is '; ages/counter
+
+  collect cluster student
+    sort by student->name$
+  end collect
+
+  for each student
+    print "6: ";student->name$
+  next student
+
+  collect cluster student
+    include student->age  >  16
+    sort by student->name$
+  end collect
+
+  print "7: ";findrow(student->name$, "Sally Sue")
+  print "8: ";findrow(student->name$, "John Smith")
+
+
+stop
+
+
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!         R o u t i n e s
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+end

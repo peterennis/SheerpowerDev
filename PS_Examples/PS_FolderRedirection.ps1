@@ -1,3 +1,6 @@
+# Run the following command first in the console to bypass not digitally signed error
+# Ref: http://tritoneco.com/2014/02/21/fix-for-powershell-script-not-digitally-signed/
+# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 $Date = Get-Date
 Write-Host "Today is"$Date
