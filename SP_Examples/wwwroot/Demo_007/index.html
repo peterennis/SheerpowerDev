@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <link rel="icon" href="favicon.ico?v=2" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <!-- Ref: https://flaviocopes.com/javascript-async-defer/ -->
+    <!-- <script defer src="index.js"></script> -->
+
+    <!-- Ref: https://codepen.io/pladaria/pen/YEbKxW -->
+    <title>SVG Animated Text</title>
+  </head>
+
+  <body>
+    <center>
+      <svg height="400" width="1300">
+        <text
+          x="10"
+          y="240"
+          fill="transparent"
+          stroke-width="20"
+          stroke="lightgray"
+          stroke-opacity="0.5"
+          stroke-dasharray="400, 1800"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          style="font-size: 300px;font-family: sans-serif; font-weight: 800"
+        >
+          adaept
+          <animate
+            attributeName="stroke-dashoffset"
+            from="0"
+            to="1000000"
+            dur="10000s"
+            repeatCount="indefinite"
+          />
+        </text>
+        <text
+          x="10"
+          y="240"
+          fill="transparent"
+          stroke-width="10"
+          stroke="gray"
+          stroke-opacity="0.5"
+          stroke-dasharray="700, 800"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          style="font-size: 300px;font-family: sans-serif; font-weight: 800"
+        >
+          adaept
+          <animate
+            attributeName="stroke-dashoffset"
+            from="0"
+            to="1000000"
+            dur="15000s"
+            repeatCount="indefinite"
+          />
+        </text>
+        <text
+          x="10"
+          y="240"
+          fill="url(#space)"
+          stroke-width="2"
+          stroke="black"
+          stroke-opacity="0.5"
+          stroke-dasharray="750, 1200"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          style="font-size: 300px;font-family: sans-serif; font-weight: 800"
+        >
+          adaept
+          <animate
+            attributeName="stroke-dashoffset"
+            from="0"
+            to="1000000"
+            dur="5000s"
+            repeatCount="indefinite"
+          />
+        </text>
+      </svg>
+    </center>
+  </body>
+</html>
