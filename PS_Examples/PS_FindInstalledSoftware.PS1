@@ -7,7 +7,7 @@
 # Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
 # The command uses the Set-ExecutionPolicy cmdlet to set an execution policy of Unrestricted for the current user.
 
-cls
+Clear-Host
 
 Write-Host "Start=>"
 
