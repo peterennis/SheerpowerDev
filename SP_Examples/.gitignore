@@ -1,4 +1,5 @@
 data/*.ARS
 output/
+PS_Examples/Folder-Permissions*.*
 
 *.zip
