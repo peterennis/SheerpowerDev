@@ -9,7 +9,7 @@
 
 Clear-Host
 
-Write-Host "Start=>"
+Write-Host "Start=>" -BackgroundColor Magenta
 
 ### Ref: https://www.petri.com/how-to-get-ntfs-file-permissions-using-powershell
 #Get-Acl -Path W:\peterennis | Format-Table -Wrap
@@ -68,4 +68,4 @@ foreach ($Folder in $Folders) {
 }
 
 
-Write-Host "<=End"
+Write-Host "<=End" -BackgroundColor Magenta

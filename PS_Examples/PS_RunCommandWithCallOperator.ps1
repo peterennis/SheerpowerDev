@@ -9,7 +9,7 @@
 
 Clear-Host
 
-Write-Host "Start=>"
+Write-Host "Start=>" -BackgroundColor Magenta
 # Ref: https://social.technet.microsoft.com/wiki/contents/articles/7703.powershell-running-executables.aspx
 
 $OutputFile = 'C:\TEMP\AccessCheckDetails.txt'
@@ -26,4 +26,4 @@ Get-Content -Path $OutputFile | Export-Csv -Path $OutputFileCsv -NoTypeInformati
 Get-Content -Path $OutputFile
 Write-Host $OutputFile
 
-Write-Host "<=End"
+Write-Host "<=End" -BackgroundColor Magenta
