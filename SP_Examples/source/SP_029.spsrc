@@ -1,0 +1,360 @@
+set seed 1
+
+option arithmetic integer
+
+grand_max_tries = -1
+
+
+// use these when doing multiple characters at a time
+prime1 = 490001
+prime2 = 17
+//prime1 = 19
+//prime2 = 13
+
+data_items = 2000000
+maxsize = data_items * 2
+
+max_tries = 0
+
+dim data$(data_items)
+dim hashdata_idx(maxsize)
+dim hashinfo(maxsize)
+dim hashreverse(data_items)
+
+
+print 'Making random values'
+for idx = 1 to data_items
+  data$(idx) = str$(rnd)
+next idx
+
+
+max_tries = 0
+
+print 'Clearing hash arrays'
+for i = 1 to maxsize
+  hashdata_idx(i) = 0
+  hashinfo(i) = 0
+next i
+
+for i = 1 to data_items
+  hashreverse(i) = 0
+next i
+
+print fulltime$(0,3);' Starting data and hash loading'; data_items;' keys'
+start_time = time(5)
+max_tries = 0
+for i=1 to data_items
+  
+
+  
+  key$ = data$(i)
+  
+  nth = 1
+  find_key
+  
+  // This is the first time we have seen this key, so store and note it is the first
+  if not found? then 
+    nth = 1
+    get_hash_index
+    if tries > max_tries then max_tries = tries
+    hashdata_idx(hidx)  = i
+    hashinfo(hidx)  = 1
+    data$(i) = key$
+    hashreverse(i) = hidx
+    iterate for
+  end if
+  
+  // this is a duplicate, so bump the counter
+  nth = hashinfo(hidx)+1
+  hashinfo(hidx) = nth
+  
+  get_hash_index
+  if tries > max_tries then max_tries = tries
+  hashdata_idx(hidx)  = i
+  hashinfo(hidx)  = -nth // used to cross-checking that we found the correct occurance (use neg as flag)
+  data$(i) = key$
+  hashreverse(i) = hidx // used so given a key and location, we can delete it, etc
+  
+  
+next i
+
+if max_tries > grand_max_tries then grand_max_tries = max_tries
+
+debug on show max_tries
+
+elapsed = time(5) - start_time
+print 'loading time was: '; elapsed
+print 'Keys per second : '; round(data_items/elapsed)
+print
+
+
+print 'Now lets try lookups'
+total_lookups = 0
+
+start_time = time(5)
+
+max_lookup_tries = -1
+max_occurs = 0
+for data_idx = 1 to data_items
+  
+  rnd_hidx = data_idx
+  key$ = data$(rnd_hidx)
+  
+  nth = 1
+  total_lookups++
+  find_key
+  if lookup_tries > max_lookup_tries then 
+    max_lookup_tries = lookup_tries
+    debug on show lookup_tries
+  end if
+  
+  if not found? then
+    print '?? Key not found: '; key$, ' lookup tries: '; lookup_tries
+    delay
+    iterate for
+  end if
+  
+  if data$(found) <> key$ then 
+    debug on show rnd_hidx //, hidx
+    halt 'wrong indexes'
+  end if
+  
+  occurs = hashinfo(hidx)
+
+  if occurs > max_occurs then max_occurs = occurs
+
+  for dup = 2 to occurs
+    
+    total_lookups++
+    nth = dup
+    find_key
+    if lookup_tries > max_lookup_tries then 
+      max_lookup_tries = lookup_tries
+      debug on show lookup_tries
+    end if
+  
+    if not found? then
+      print '?? Key '; key$;', dup not found for #'; dup
+      iterate for
+    end if
+    //print dup, found, data$(found)
+  next dup
+  //if occurs > 0 then print
+  
+  
+next data_idx
+elapsed = time(5) - start_time
+print 'Lookup time was: '; elapsed
+print 'Keys per second : '; round(total_lookups/elapsed)
+print 'Max occurs: '; max_occurs
+
+print 'done -- grand max tries: '; grand_max_tries
+print
+
+delay
+
+stop
+
+
+
+
+!
+! g e t _ h a s h _ i n d e x 
+!
+!
+! Brief description:
+!    get the hash index of a given key
+!
+! Expected on entry:
+!    key$  = key value
+!    nth  = which one are we inserting (1 = the first/root one)
+!    phash1 = partial hash from the last find
+!    phash2 = partial hash from the last find
+!
+! Locals used:
+!    
+!
+! Results on exit:
+!    hidx = hash key index
+!    lookup_tries = # of tries to determine if valid or not
+!
+routine get_hash_index
+  
+  tries = 0
+//  hash1 = 0
+//  hash2 = 0
+//  for idx = 1 to len(key$)
+//    c = ascii(key$[idx:idx])
+//    hash1 = hash1*503 + c
+//    hash2 = hash2*13 + c
+//  next idx
+  hash1 = phash1
+  hash2 = phash2
+    
+  if nth > 0 then 
+    hash1 = hash1+prime1*nth
+    hash2 = hash2+prime2*nth
+  end if
+  
+//  if hash1 < 0 then hash1 = -hash1
+//  if hash2 < 0 then hash2 = -hash2
+  
+  z0 = hash1 - (hash1/maxsize)*maxsize
+  hidx = z0+1
+  if hidx < 0 then hidx = -hidx
+  if hidx = 0 then hidx = 1
+  
+  tries++
+  if hashdata_idx(hidx) = 0 then exit routine
+    
+  z0 = hash2 - (hash2/maxsize)*maxsize
+  hidx = z0+1
+  if hidx < 0 then hidx = -hidx
+  if hidx = 0 then hidx = 1
+
+  
+  tries++
+  if hashdata_idx(hidx) = 0 then exit routine
+  
+  hash3 = hash1+hash2
+//  if hash3 < 0 then hash3 = -hash3
+  
+  z0 = hash3 - (hash3/maxsize)*maxsize
+  hidx = z0+1
+  if hidx < 0 then hidx = -hidx
+  if hidx = 0 then hidx = 1
+
+  
+  tries++
+  
+  do
+    if hashdata_idx(hidx) = 0 then exit routine
+    hidx++
+    tries++
+    if hidx > maxsize then hidx = 1
+  loop
+  
+end routine
+
+
+
+// result: found = index of the key
+routine find_key
+  
+  found = 0
+  find_hash_index
+  if not found? then exit routine
+  found = hashdata_idx(hidx)
+  
+end routine
+
+
+
+
+!
+! f i n d _ h a s h _ i n d e x 
+!
+!
+! Brief description:
+!    find the hash index of a given key
+!
+! Expected on entry:
+!    key$  = key value
+!
+! Locals used:
+!    
+!
+! Results on exit:
+!    hidx = hash key index  or 0 if not found
+!
+!
+routine find_hash_index
+ 
+  found?       = true
+  lookup_tries = 0
+  
+  hash1 = 0
+  hash2 = 0
+  
+//  for idx = 1 to len(key$)
+//    c = ascii(key$[idx:idx])
+//    hash1 = hash1*prime1 + c
+//    hash2 = hash2*prime2 + c
+//  next idx
+
+  for idx = 1 to len(key$) step 4
+    c = convert(mid(key$, idx, 4))
+    hash1 = hash1*prime1 + c
+    hash2 = hash2*prime2 + c
+  next idx
+
+
+
+  // save for the GET_HASH_INDEX later on so we can avoid the initial hash recalculations
+  phash1 = hash1
+  phash2 = hash2
+  
+  if nth > 0 then 
+    hash1 = hash1+prime1*nth
+    hash2 = hash2+prime2*nth
+  end if
+  
+
+  z0 = hash1 - (hash1/maxsize)*maxsize
+  hidx = z0+1
+  if hidx < 0 then hidx = -hidx
+  if hidx = 0 then hidx = 1
+    
+  lookup_tries++
+  this_data = hashdata_idx(hidx)
+  if this_data = 0 then
+    found? = false
+    exit routine
+  end if
+  if data$(this_data) = key$ then 
+    if nth = 1 and hashinfo(hidx) > 0 then exit routine
+    if hashinfo(hidx) = -nth then exit routine
+  end if
+  
+   
+  z0 = hash2 - (hash2/maxsize)*maxsize
+  hidx = z0+1
+  if hidx < 0 then hidx = -hidx
+  if hidx = 0 then hidx = 1
+    
+  lookup_tries++
+  this_data = hashdata_idx(hidx)
+  if this_data = 0 then
+    found? = false
+    exit routine
+  end if
+  
+  if data$(this_data) = key$ then 
+    if nth = 1 and hashinfo(hidx) > 0 then exit routine
+    if hashinfo(hidx) = -nth then exit routine
+  end if
+  
+  hash3 = hash1+hash2
+  z0 = hash3 - (hash3/maxsize)*maxsize
+  hidx = z0+1
+  if hidx < 0 then hidx = -hidx
+  if hidx = 0 then hidx = 1
+    
+  do
+    lookup_tries++
+    this_data = hashdata_idx(hidx)
+    if this_data = 0 then
+      found? = false
+      exit routine
+    end if
+    
+    if data$(this_data) = key$ then 
+      if nth = 1 and hashinfo(hidx) > 0 then exit routine
+      if hashinfo(hidx) = -nth then exit routine
+    end if
+  
+    hidx++
+    if hidx > maxsize then hidx = 1
+  loop
+  
+end routine
