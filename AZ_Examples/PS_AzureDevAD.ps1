@@ -38,6 +38,7 @@ $vnet | Set-AzVirtualNetwork
 #>
 
 # Create DC1 VM and configure it as the DC for testlab.<your public domain> AD DS domain and a DNS server for the VMs of TestLab virtual network.
+# You will be prompted for username/password for the local administrator account on DC1. Use a strong password and username/password securely.
 <#
 $rgName="<resource group name>"
 $locName=(Get-AzResourceGroup -Name $rgName).Location
@@ -55,4 +56,11 @@ $dataDisk1=New-AzDisk -DiskName "DC1-DataDisk1" -Disk $diskConfig -ResourceGroup
 $vm=Add-AzVMDataDisk -VM $vm -Name "DC1-DataDisk1" -CreateOption Attach -ManagedDiskId $dataDisk1.Id -Lun 1
 New-AzVM -ResourceGroupName $rgName -Location $locName -VM $vm
 #>
+
+<# Successful Output
+RequestId IsSuccessStatusCode StatusCode ReasonPhrase
+--------- ------------------- ---------- ------------
+                         True         OK OK
+#>
+
 
