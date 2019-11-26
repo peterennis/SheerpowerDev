@@ -63,4 +63,14 @@ RequestId IsSuccessStatusCode StatusCode ReasonPhrase
                          True         OK OK
 #>
 
+<#
+Next, connect to the DC1 virtual machine.
+In the Azure portal, click Resource Groups > [resource group name] > DC1 > Connect.
+In the open pane, click Download RDP file. Open the DC1.rdp file that is downloaded, and then click Connect.
+Specify the DC1 local administrator account name:
+Windows 10:
+In the Windows Security dialog box, click More choices, and then click Use a different account. In User name, type DC1\[Local administrator account name].
+In Password, type the password of the local administrator account, and then click OK.
+When prompted, click Yes.
+#>
 
