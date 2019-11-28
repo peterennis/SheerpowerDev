@@ -37,7 +37,7 @@ User1/Password
 #Get-AzSubscription | Sort-Object Name | Select-Object Name
 
 # Set your Azure subscription. Replace everything within the quotes, including the < and > characters, with the correct name.
-#$subscr="<subscription name>"
+#$subscr = "<subscription name>"
 #Get-AzSubscription -SubscriptionName $subscr | Select-AzSubscription
 
 # Create a new resource group for the enterprise test lab. To determine a unique resource group name, use this command to list your existing resource groups.
@@ -66,20 +66,20 @@ $vnet | Set-AzVirtualNetwork
 # Create DC1 VM and configure it as the DC for testlab.<your public domain> AD DS domain and a DNS server for the VMs of TestLab virtual network.
 # You will be prompted for username/password for the local administrator account on DC1. Use a strong password and username/password securely.
 <#
-$rgName="<resource group name>"
-$locName=(Get-AzResourceGroup -Name $rgName).Location
-$vnet=Get-AzVirtualNetwork -Name TestLab -ResourceGroupName $rgName
-$pip=New-AzPublicIpAddress -Name DC1-PIP -ResourceGroupName $rgName -Location $locName -AllocationMethod Dynamic
-$nic=New-AzNetworkInterface -Name DC1-NIC -ResourceGroupName $rgName -Location $locName -SubnetId $vnet.Subnets[0].Id -PublicIpAddressId $pip.Id -PrivateIpAddress 10.0.0.4
-$vm=New-AzVMConfig -VMName DC1 -VMSize Standard_B2s
-$cred=Get-Credential -Message "Type the name and password of the local administrator account for DC1."
-$vm=Set-AzVMOperatingSystem -VM $vm -Windows -ComputerName DC1 -Credential $cred -ProvisionVMAgent -EnableAutoUpdate
-$vm=Set-AzVMSourceImage -VM $vm -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2019-Datacenter -Version "latest"
-$vm=Add-AzVMNetworkInterface -VM $vm -Id $nic.Id
-$vm=Set-AzVMOSDisk -VM $vm -Name "DC1-OS" -DiskSizeInGB 128 -CreateOption FromImage
-$diskConfig=New-AzDiskConfig -AccountType "Standard_LRS" -Location $locName -CreateOption Empty -DiskSizeGB 20
-$dataDisk1=New-AzDisk -DiskName "DC1-DataDisk1" -Disk $diskConfig -ResourceGroupName $rgName
-$vm=Add-AzVMDataDisk -VM $vm -Name "DC1-DataDisk1" -CreateOption Attach -ManagedDiskId $dataDisk1.Id -Lun 1
+$rgName = "<resource group name>"
+$locName = (Get-AzResourceGroup -Name $rgName).Location
+$vnet = Get-AzVirtualNetwork -Name TestLab -ResourceGroupName $rgName
+$pip = New-AzPublicIpAddress -Name DC1-PIP -ResourceGroupName $rgName -Location $locName -AllocationMethod Dynamic
+$nic = New-AzNetworkInterface -Name DC1-NIC -ResourceGroupName $rgName -Location $locName -SubnetId $vnet.Subnets[0].Id -PublicIpAddressId $pip.Id -PrivateIpAddress 10.0.0.4
+$vm = New-AzVMConfig -VMName DC1 -VMSize Standard_B2s
+$cred = Get-Credential -Message "Type the name and password of the local administrator account for DC1."
+$vm = Set-AzVMOperatingSystem -VM $vm -Windows -ComputerName DC1 -Credential $cred -ProvisionVMAgent -EnableAutoUpdate
+$vm = Set-AzVMSourceImage -VM $vm -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2019-Datacenter -Version "latest"
+$vm = Add-AzVMNetworkInterface -VM $vm -Id $nic.Id
+$vm = Set-AzVMOSDisk -VM $vm -Name "DC1-OS" -DiskSizeInGB 128 -CreateOption FromImage
+$diskConfig = New-AzDiskConfig -AccountType "Standard_LRS" -Location $locName -CreateOption Empty -DiskSizeGB 20
+$dataDisk1 = New-AzDisk -DiskName "DC1-DataDisk1" -Disk $diskConfig -ResourceGroupName $rgName
+$vm = Add-AzVMDataDisk -VM $vm -Name "DC1-DataDisk1" -CreateOption Attach -ManagedDiskId $dataDisk1.Id -Lun 1
 New-AzVM -ResourceGroupName $rgName -Location $locName -VM $vm
 #>
 
@@ -199,12 +199,12 @@ choose a strong password. Record the User1 account password and store it in a se
 # Run this command at the administrator-level Windows PowerShell command prompt.
 
 <#
-$yourDomain="<your public domain>"
-$domainName = "testlab."+$yourDomain
-$userName="user1@" + $domainName
-$userSID=(New-Object System.Security.Principal.NTAccount($userName)).Translate([System.Security.Principal.SecurityIdentifier]).Value
-$groupNames=@("Domain Admins","Enterprise Admins","Schema Admins")
-ForEach ($name in $groupNames) {Add-ADPrincipalGroupMembership -Identity $userSID -MemberOf (Get-ADGroup -Identity $name).SID.Value}
+$yourDomain = "<your public domain>"
+$domainName = "testlab." + $yourDomain
+$userName = "user1@" + $domainName
+$userSID = (New-Object System.Security.Principal.NTAccount($userName)).Translate([System.Security.Principal.SecurityIdentifier]).Value
+$groupNames = @("Domain Admins", "Enterprise Admins", "Schema Admins")
+ForEach ($name in $groupNames) { Add-ADPrincipalGroupMembership -Identity $userSID -MemberOf (Get-ADGroup -Identity $name).SID.Value }
 #>
 
 # Close the Remote Desktop session with DC1 and then reconnect using the TESTLAB\User1 account.
@@ -215,3 +215,30 @@ ForEach ($name in $groupNames) {Add-ADPrincipalGroupMembership -Identity $userSI
 
 # Step 2: Configure APP1
 # =====================
+
+# In this step, you create and configure APP1, which is an application server that initially provides web and file sharing services.
+# To create an Azure Virtual Machine for APP1, fill in the name of your resource group and run these commands
+# at the command prompt on your local computer.
+
+<#
+$rgName = "<resource group name>"
+$locName = (Get-AzResourceGroup -Name $rgName).Location
+$vnet = Get-AzVirtualNetwork -Name TestLab -ResourceGroupName $rgName
+$pip = New-AzPublicIpAddress -Name APP1-PIP -ResourceGroupName $rgName -Location $locName -AllocationMethod Dynamic
+$nic = New-AzNetworkInterface -Name APP1-NIC -ResourceGroupName $rgName -Location $locName -SubnetId $vnet.Subnets[0].Id -PublicIpAddressId $pip.Id
+$vm = New-AzVMConfig -VMName APP1 -VMSize Standard_B2s
+$cred = Get-Credential -Message "Type the name and password of the local administrator account for APP1."
+# pause to enter password
+# New-AzVM : The supplied password must be between 8-123 characters long and must satisfy at least 3 of password complexity requirements from the following:
+# 1) Contains an uppercase character
+# 2) Contains a lowercase character
+# 3) Contains a numeric digit
+# 4) Contains a special character
+# 5) Control characters are not allowed
+$vm = Set-AzVMOperatingSystem -VM $vm -Windows -ComputerName APP1 -Credential $cred -ProvisionVMAgent -EnableAutoUpdate
+$vm = Set-AzVMSourceImage -VM $vm -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2019-Datacenter -Version "latest"
+$vm = Add-AzVMNetworkInterface -VM $vm -Id $nic.Id
+$vm = Set-AzVMOSDisk -VM $vm -Name "APP1-OS" -DiskSizeInGB 128 -CreateOption FromImage
+New-AzVM -ResourceGroupName $rgName -Location $locName -VM $vm
+#>
+
