@@ -18,6 +18,7 @@ $cred
 $diskConfig
 $dataDisk1
 $yourDomain="<your public domain>"
+User1/Password
 #>
 
 
@@ -178,3 +179,14 @@ In Windows Security, click Use another account. In User name, type TESTLAB\[Loca
 In Password, type the password of the local administrator account, and then click OK.
 When prompted, click Yes.
 #>
+
+# Next, create a user account in Active Directory that will be used when logging in to TESTLAB domain member computers.
+# Run this command at an administrator-level Windows PowerShell command prompt.
+#New-ADUser -SamAccountName User1 -AccountPassword (read-host "Set user password" -assecurestring) -name "User1" -enabled $true -PasswordNeverExpires $true -ChangePasswordAtLogon $false
+
+<#
+Note that this command prompts you to supply the User1 account password.
+Because this account will be used for remote desktop connections for all TESTLAB domain member computers,
+choose a strong password. Record the User1 account password and store it in a secured location.
+#>
+
