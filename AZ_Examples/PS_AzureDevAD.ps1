@@ -23,7 +23,12 @@ User1/Password
 
 
 # Ref: https://docs.microsoft.com/en-us/microsoft-365/enterprise/simulated-ent-base-configuration-microsoft-365-enterprise
+
 # Method 2: Build your simulated intranet with Azure PowerShell
+# =============================================================
+
+# Step 1: Create DC1
+# ==================
 
 # Sign in to your Azure account with the following command
 #Connect-AzAccount
@@ -190,3 +195,23 @@ Because this account will be used for remote desktop connections for all TESTLAB
 choose a strong password. Record the User1 account password and store it in a secured location.
 #>
 
+# Next, configure the new User1 account as a domain, enterprise, and schema administrator.
+# Run this command at the administrator-level Windows PowerShell command prompt.
+
+<#
+$yourDomain="<your public domain>"
+$domainName = "testlab."+$yourDomain
+$userName="user1@" + $domainName
+$userSID=(New-Object System.Security.Principal.NTAccount($userName)).Translate([System.Security.Principal.SecurityIdentifier]).Value
+$groupNames=@("Domain Admins","Enterprise Admins","Schema Admins")
+ForEach ($name in $groupNames) {Add-ADPrincipalGroupMembership -Identity $userSID -MemberOf (Get-ADGroup -Identity $name).SID.Value}
+#>
+
+# Close the Remote Desktop session with DC1 and then reconnect using the TESTLAB\User1 account.
+
+# Next, to allow traffic for the Ping tool, run this command at an administrator-level Windows PowerShell command prompt.
+#Set-NetFirewallRule -DisplayName "File and Printer Sharing (Echo Request - ICMPv4-In)" -enabled True
+
+
+# Step 2: Configure APP1
+# =====================
