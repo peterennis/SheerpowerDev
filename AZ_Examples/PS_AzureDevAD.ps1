@@ -3,7 +3,8 @@
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 
-<# VARIABLES USED
+<#------------------------------------------------------------------ 
+# VARIABLES USED
 $subscr="<subscription name>"
 $rgName = "<resource group name>"
 $locName = "<location name, such as West US>"
@@ -19,7 +20,7 @@ $diskConfig
 $dataDisk1
 $yourDomain="<your public domain>"
 User1/Password
-#>
+-------------------------------------------------------------------#>
 
 
 # Ref: https://docs.microsoft.com/en-us/microsoft-365/enterprise/simulated-ent-base-configuration-microsoft-365-enterprise
@@ -31,22 +32,32 @@ User1/Password
 # ==================
 
 # Sign in to your Azure account with the following command
-#Connect-AzAccount
+<#
+Connect-AzAccount
+#>
 
 # Get your subscription name using the following command.
-#Get-AzSubscription | Sort-Object Name | Select-Object Name
+<#
+Get-AzSubscription | Sort-Object Name | Select-Object Name
+#>
 
 # Set your Azure subscription. Replace everything within the quotes, including the < and > characters, with the correct name.
-#$subscr = "<subscription name>"
-#Get-AzSubscription -SubscriptionName $subscr | Select-AzSubscription
+<#
+$subscr = "<subscription name>"
+Get-AzSubscription -SubscriptionName $subscr | Select-AzSubscription
+#>
 
 # Create a new resource group for the enterprise test lab. To determine a unique resource group name, use this command to list your existing resource groups.
-#Get-AzResourceGroup | Sort-Object ResourceGroupName | Select-Object ResourceGroupName
+<#
+Get-AzResourceGroup | Sort-Object ResourceGroupName | Select-Object ResourceGroupName
+#>
 
 # Create a new resource group with these commands. Replace everything within the quotes, including the < and > characters, with the correct names.
-#$rgName = "<resource group name>"
-#$locName = "<location name, such as West US>"
-#New-AzResourceGroup -Name $rgName -Location $locName
+<#
+$rgName = "<resource group name>"
+$locName = "<location name, such as West US>"
+New-AzResourceGroup -Name $rgName -Location $locName
+#>
 
 # Create a virtual network to host a subnet of the lab enterprise environment and protect it with a network security group.
 <#
@@ -83,13 +94,14 @@ $vm = Add-AzVMDataDisk -VM $vm -Name "DC1-DataDisk1" -CreateOption Attach -Manag
 New-AzVM -ResourceGroupName $rgName -Location $locName -VM $vm
 #>
 
-<# Successful Output
+<#------------------------------------------------------------------ 
+# Successful Output
 RequestId IsSuccessStatusCode StatusCode ReasonPhrase
 --------- ------------------- ---------- ------------
                          True         OK OK
-#>
+-------------------------------------------------------------------#>
 
-<#
+<#------------------------------------------------------------------
 Next, connect to the DC1 virtual machine.
 In the Azure portal, click Resource Groups > [resource group name] > DC1 > Connect.
 In the open pane, click Download RDP file. Open the DC1.rdp file that is downloaded, and then click Connect.
@@ -98,12 +110,15 @@ Windows 10:
 In the Windows Security dialog box, click More choices, and then click Use a different account. In User name, type DC1\[Local administrator account name].
 In Password, type the password of the local administrator account, and then click OK.
 When prompted, click Yes.
-#>
+-------------------------------------------------------------------#>
 
 # Next, add an extra data disk as a new volume with the drive letter F: with this command at an administrator-level Windows PowerShell command prompt on DC1.
-#Get-Disk | Where-Object PartitionStyle -eq "RAW" | Initialize-Disk -PartitionStyle MBR -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "WSAD Data"
+<#
+Get-Disk | Where-Object PartitionStyle -eq "RAW" | Initialize-Disk -PartitionStyle MBR -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "WSAD Data"
+#>
 
-<# Sample Command/Output from an administrator-level Windows PowerShell command prompt on DC1:
+<#------------------------------------------------------------------
+# Sample Command/Output from an administrator-level Windows PowerShell command prompt on DC1:
 ```
 Windows PowerShell
 Copyright (C) Microsoft Corporation. All rights reserved.
@@ -118,19 +133,18 @@ F           WSAD Data    NTFS           Fixed     Healthy      OK               
 
 PS C:\Users\peterennis>
 ```
-#>
+-------------------------------------------------------------------#>
 
 # Next, configure DC1 as a domain controller and DNS server for the testlab.<your public domain> domain.
 # Specify your public domain name, remove the < and > characters, and then run these commands at
 # an administrator-level Windows PowerShell command prompt on DC1.
-
 <#
 $yourDomain = "<your public domain>"
 Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
 Install-ADDSForest -DomainName testlab.$yourDomain -DatabasePath "F:\NTDS" -SysvolPath "F:\SYSVOL" -LogPath "F:\Logs"
 #>
 
-<#
+<#------------------------------------------------------------------
 You will need to specify a safe mode administrator password. Store this password in a secure location.
 Note that these commands can take a few minutes to complete.
 
@@ -139,7 +153,7 @@ PS C:\Users\peterennis> Install-WindowsFeature AD-Domain-Services -IncludeManage
 Success Restart Needed Exit Code      Feature Result
 ------- -------------- ---------      --------------
 True    No             Success        {Active Directory Domain Services, Group P...
-
+```
 
 SafeModeAdministratorPassword: ************
 Confirm SafeModeAdministratorPassword: ************
@@ -172,10 +186,10 @@ For more information about this setting, see Knowledge Base article 942564
 (http://go.microsoft.com/fwlink/?LinkId=104751).
 
 etc. some more warning messages about WS 2019 configuration...
+-------------------------------------------------------------------#>
 
-#>
 
-<#
+<#------------------------------------------------------------------
 After DC1 restarts, reconnect to the DC1 virtual machine.
 
 In the Azure portal, click Resource Groups > [your resource group name] > DC1 > Connect.
@@ -183,21 +197,20 @@ Run the DC1.rdp file that is downloaded, and then click Connect.
 In Windows Security, click Use another account. In User name, type TESTLAB\[Local administrator account name].
 In Password, type the password of the local administrator account, and then click OK.
 When prompted, click Yes.
-#>
+-------------------------------------------------------------------#>
 
 # Next, create a user account in Active Directory that will be used when logging in to TESTLAB domain member computers.
 # Run this command at an administrator-level Windows PowerShell command prompt.
-#New-ADUser -SamAccountName User1 -AccountPassword (read-host "Set user password" -assecurestring) -name "User1" -enabled $true -PasswordNeverExpires $true -ChangePasswordAtLogon $false
-
 <#
-Note that this command prompts you to supply the User1 account password.
-Because this account will be used for remote desktop connections for all TESTLAB domain member computers,
-choose a strong password. Record the User1 account password and store it in a secured location.
+New-ADUser -SamAccountName User1 -AccountPassword (read-host "Set user password" -assecurestring) -name "User1" -enabled $true -PasswordNeverExpires $true -ChangePasswordAtLogon $false
 #>
+
+# Note that this command prompts you to supply the User1 account password.
+# Because this account will be used for remote desktop connections for all TESTLAB domain member computers,
+# choose a strong password. Record the User1 account password and store it in a secured location.
 
 # Next, configure the new User1 account as a domain, enterprise, and schema administrator.
 # Run this command at the administrator-level Windows PowerShell command prompt.
-
 <#
 $yourDomain = "<your public domain>"
 $domainName = "testlab." + $yourDomain
@@ -208,10 +221,10 @@ ForEach ($name in $groupNames) { Add-ADPrincipalGroupMembership -Identity $userS
 #>
 
 # Close the Remote Desktop session with DC1 and then reconnect using the TESTLAB\User1 account.
-
 # Next, to allow traffic for the Ping tool, run this command at an administrator-level Windows PowerShell command prompt.
-#Set-NetFirewallRule -DisplayName "File and Printer Sharing (Echo Request - ICMPv4-In)" -enabled True
-
+<#
+Set-NetFirewallRule -DisplayName "File and Printer Sharing (Echo Request - ICMPv4-In)" -enabled True
+#>
 
 # Step 2: Configure APP1
 # =====================
@@ -242,3 +255,51 @@ $vm = Set-AzVMOSDisk -VM $vm -Name "APP1-OS" -DiskSizeInGB 128 -CreateOption Fro
 New-AzVM -ResourceGroupName $rgName -Location $locName -VM $vm
 #>
 
+<#------------------------------------------------------------------
+```
+RequestId IsSuccessStatusCode StatusCode ReasonPhrase
+--------- ------------------- ---------- ------------
+                         True         OK OK
+```
+-------------------------------------------------------------------#>
+
+# Next, connect to the APP1 virtual machine using the APP1 local administrator account name and password,
+# and then open a Windows PowerShell command prompt.
+# To check name resolution and network communication between APP1 and DC1,
+# run the ping dc1.testlab.<your public domain name> command and verify that there are four replies.
+
+<#------------------------------------------------------------------
+```
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\peterennis> ping dc1.testlab.adaept.com
+
+Pinging dc1.testlab.adaept.com [10.0.0.4] with 32 bytes of data:
+Reply from 10.0.0.4: bytes=32 time<1ms TTL=128
+Reply from 10.0.0.4: bytes=32 time<1ms TTL=128
+Reply from 10.0.0.4: bytes=32 time=1ms TTL=128
+Reply from 10.0.0.4: bytes=32 time=1ms TTL=128
+
+Ping statistics for 10.0.0.4:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 1ms, Average = 0ms
+PS C:\Users\peterennis>
+```
+-------------------------------------------------------------------#>
+
+# Next, join the APP1 virtual machine to the TESTLAB domain with these commands at the Windows PowerShell prompt.
+# Note that you must supply the TESTLAB\User1 domain account credentials after running the Add-Computer command.
+<#
+$yourDomain = "<your public domain name>"
+Add-Computer -DomainName ("testlab" + $yourDomain)
+Restart-Computer
+#>
+
+# After APP1 restarts, connect to it using the TESTLAB\User1 account,
+# and then open an administrator-level Windows PowerShell command prompt.
+# Next, make APP1 a web server with this command at an administrator-level Windows PowerShell command prompt on APP1.
+<#
+Install-WindowsFeature Web-WebServer -IncludeManagementTools
+#>
