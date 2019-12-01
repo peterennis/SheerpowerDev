@@ -5,6 +5,9 @@
 
 <#------------------------------------------------------------------ 
 # VARIABLES USED
+# $TheServerSku = "2019-Datacenter"
+# $TheVMSku = "Standard_B2s"
+# -StorageAccountName $stDiagName Ref: https://techcommunity.microsoft.com/t5/Azure/WARNING-Since-the-VM-is-created-using-premium-storage-existing/m-p/133863
 $subscr="<subscription name>"
 $rgName = "<resource group name>"
 $locName = "<location name, such as West US>"
@@ -188,7 +191,6 @@ For more information about this setting, see Knowledge Base article 942564
 etc. some more warning messages about WS 2019 configuration...
 -------------------------------------------------------------------#>
 
-
 <#------------------------------------------------------------------
 After DC1 restarts, reconnect to the DC1 virtual machine.
 
@@ -302,4 +304,46 @@ Restart-Computer
 # Next, make APP1 a web server with this command at an administrator-level Windows PowerShell command prompt on APP1.
 <#
 Install-WindowsFeature Web-WebServer -IncludeManagementTools
+#>
+
+<#------------------------------------------------------------------
+```
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\windows\system32> Install-WindowsFeature Web-WebServer -IncludeManagementTools
+
+Success Restart Needed Exit Code      Feature Result
+------- -------------- ---------      --------------
+True    No             Success        {Common HTTP Features, Default Document, D...
+
+
+PS C:\windows\system32>
+```
+-------------------------------------------------------------------#>
+
+# Next, create a shared folder and a text file within the folder on APP1 with these PowerShell commands.
+<#
+New-Item -path c:\files -type directory
+Write-Output "This is a shared file." | out-file c:\files\example.txt
+New-SmbShare -name files -path c:\files -changeaccess TESTLAB\User1
+#>
+
+# Step 3: Configure CLIENT1
+# =========================
+
+# Create and configure CLIENT1, which acts as a typical laptop, tablet, or desktop computer on the intranet.
+<#
+$rgName = "<resource group name>"
+$locName = (Get-AzResourceGroup -Name $rgName).Location
+$vnet = Get-AzVirtualNetwork -Name TestLab -ResourceGroupName $rgName
+$pip = New-AzPublicIpAddress -Name CLIENT1-PIP -ResourceGroupName $rgName -Location $locName -AllocationMethod Dynamic
+$nic = New-AzNetworkInterface -Name CLIENT1-NIC -ResourceGroupName $rgName -Location $locName -SubnetId $vnet.Subnets[0].Id -PublicIpAddressId $pip.Id
+$vm = New-AzVMConfig -VMName CLIENT1 -VMSize Standard_B2s
+$cred = Get-Credential -Message "Type the name and password of the local administrator account for CLIENT1."
+$vm = Set-AzVMOperatingSystem -VM $vm -Windows -ComputerName CLIENT1 -Credential $cred -ProvisionVMAgent -EnableAutoUpdate
+$vm = Set-AzVMSourceImage -VM $vm -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2019-Datacenter -Version "latest"
+$vm = Add-AzVMNetworkInterface -VM $vm -Id $nic.Id
+$vm = Set-AzVMOSDisk -VM $vm -Name "CLIENT1-OS" -DiskSizeInGB 128 -CreateOption FromImage
+New-AzVM -ResourceGroupName $rgName -Location $locName -VM $vm
 #>
