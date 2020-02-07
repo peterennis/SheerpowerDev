@@ -11,4 +11,9 @@ $Protected = Get-ADOrganizationalUnit -filter * -Properties ProtectedFromAcciden
 
 Write-Host "Protected:`n"$Protected
 
+$MyUsers = Get-ADuser -Property * 
+Write-Host "MyUsers:`n"$MyUsers
+
+Get-ADobject -Filter * -SearchBase “OU=Users,DC=Domain,DC=com” | Set-adobject -ProtectedFromAccidentalDeletion $true
+
 pause
