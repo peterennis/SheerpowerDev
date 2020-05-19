@@ -44,9 +44,15 @@ Write-Host
 Write-Host 'C '$drivePermissions
 
 $myPermissions = Get-Content -Path $OutputFile | Where-Object { $_ -like '*peterennis*' }
-Write-Host 'D '$myPermissions
+Write-Host 'D '$myPermissions 
 $myPermissions[0]
 $myPermissions[1]
 
+# The "Access Denied" error is occurred because the "C:\System Volume Information"
+# is a system folder that is used from Windows to store information about the system
+# restore points and by default this folder is not accessible by users. 
+# Ref: https://www.repairwin.com/fix-access-denied-system-volume-information-folder/
+$theLastLine = Get-Item -Path $OutputFile | Get-Content -Tail 2
+Write-Host 'E '$theLastLine is the last non-empty line
 
 Write-Host "<=End" -BackgroundColor Magenta
