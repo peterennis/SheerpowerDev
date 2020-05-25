@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  background: #121318;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+.outer-box {
+  width: 90vw;
+  height: 90vw;
+  background: #009e60;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotate(-45deg);
+  animation: spiral 5s ease-in-out -1s alternate infinite;
+}
+@keyframes spiral {
+  0% {
+    transform: rotate(-45deg);
+ }
+  100% {
+    transform: rotate(45deg);
+ }
+}
+.box {
+  width: 82.5%;
+  height: 82.5%;
+  animation: inherit;
+  display: inherit;
+  justify-content: inherit;
+  align-items: inherit;
+  transform: inherit;
+}
+.box-a {
+  background: #121318;
+}
+.box-b {
+  background: #ed2939;
+}
