@@ -1,0 +1,110 @@
+<html>
+
+<head>
+  <!--
+     The standard form of referring JavaScript is with a script tag. Usually the script tag appears in the header but it is not mandatory:
+     How to add JavaScript - Ref: https://codepen.io/lodr/pen/atDcJ
+     In Codepen, this kind of references wont work but try in a real environment!
+
+     Script tags has two interesting attributes async and defer.
+
+     They can appear or not and mutually excluyent and can only appear on scripts inside head.
+       - with no attributes: JS loads and executes as the HTML processor find a script tag.
+       - with defer: load is in parallel (if possible) and execution is deferred until the DOM is ready.
+       -  with async: load is in parallel and execution can occur in any moment after load.
+
+     You can see the differences here:
+     http://peter.sh/experiments/asynchronous-and-deferred-javascript-execution-explained/
+  -->
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/css-doodle/0.8.5/css-doodle.min.js"></script>
+
+  <link rel="icon" href="favicon.ico?v=2" type="image/x-icon" />
+  <link rel="stylesheet" type="text/css" href="index.css" />
+  <!-- Ref: https://flaviocopes.com/javascript-async-defer/ -->
+  <!-- <script defer src="index.js"></script> -->
+
+  <!-- Ref: https://codepen.io/yuanchuan/pen/vYNQVvj -->
+  <title>Emojis As Mask Images</title>
+</head>
+
+<body>
+  <center>
+    <ul>
+      <li>
+        <css-doodle click-to-update>
+          :doodle {
+          @grid: 5x1 / 100%;
+          mask-image: @svg(
+          <svg viewBox="1 1 11 11">
+            <text font-size="9" x=".5" y="8.5">🦋</text>
+          </svg>
+          );
+          }
+          @place-cell: center;
+          @size: 100%;
+          @random {
+          filter: drop-shadow(0 0 2px #fff);
+          }
+          background: @m500(
+          radial-gradient(
+          @p(#481380, #7f78d2, #efb1ff, #ffe2ff) 50%,
+          transparent 0
+          )
+          @r(100%) @r(100%) / @r(5px) @lr
+          no-repeat
+          );
+        </css-doodle>
+      </li>
+
+      <li>
+        <css-doodle click-to-update>
+          :doodle {
+          @grid: 50x1 / 100%;
+          mask-image: @svg(
+          <svg viewBox="1 1 10 10">
+            <text font-size="8" x=".5" y="8.5">❤️</text>
+          </svg>
+          );
+          }
+          @place-cell: @r(100%) @r(100%);
+          :after {
+          content: '❤️';
+          font-size: @r(18px);
+          color: transparent;
+          text-shadow: @m10(
+          @r(±50px) @r(±50px) 0 @p(#5fdde5, #f4ea8e, #f37121, #d92027)
+          );
+          }
+        </css-doodle>
+      </li>
+
+      <li>
+        <css-doodle>
+          :doodle {
+          @grid: 32 / 100%;
+          mask-image: @svg(
+          <svg viewBox="0 0 10 10">
+            <text font-size="9" x=".5" y="8.5">⛱</text>
+          </svg>
+          );
+          }
+          border-radius: 50%;
+          background: @p(#fff, #ffd31d, #ff427f, transparent);
+          --t: scale(@r(.1, .4)) scaleY(4);
+          transform: @var(--t);
+          @keyframes f {
+          from { transform: var(--t) translateY(-400%); }
+          to { transform: var(--t) translateY(400%); }
+          }
+          @random(.2) {
+          animation: f @r(3s, 8s) linear infinite;
+          animation-delay: -@r(10s);
+          }
+        </css-doodle>
+      </li>
+    </ul>
+  </center>
+</body>
+
+</html>
